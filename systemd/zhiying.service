@@ -1,0 +1,18 @@
+[Unit]
+Description=智影字幕 API Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/zhiying
+EnvironmentFile=/var/www/zhiying/.env
+ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2 --log-level info
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/zhiying.log
+StandardError=append:/var/log/zhiying.log
+
+[Install]
+WantedBy=multi-user.target
