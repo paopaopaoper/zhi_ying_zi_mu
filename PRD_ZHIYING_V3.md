@@ -247,3 +247,5 @@ WHISPER_BASE_URL=https://api.aihubmix.com/v1
 - [ ] 调用 `/burn` 能生成带字幕视频（FFmpeg）
 - [ ] 不存在任何硬编码路径
 - [ ] 缺失 `.env` 时启动报错并退出
+
+

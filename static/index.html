@@ -6,447 +6,36 @@
 <title>智影字幕 — AI 智能字幕生成</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* ===================== 莫兰迪设计系统 ===================== */
-:root {
-  --bg-primary: #F5F0EC;
-  --bg-secondary: #EDE8E2;
-  --bg-card: rgba(255, 255, 255, 0.72);
-  --bg-card-hover: rgba(255, 255, 255, 0.85);
-  --brand-primary: #8FA3B8;
-  --brand-primary-dark: #6B7F96;
-  --brand-primary-light: #B8C9DB;
-  --brand-secondary: #D4A9A9;
-  --brand-secondary-light: #E8CBCB;
-  --brand-accent: #C9A89A;
-  --brand-accent-light: #E0C9BF;
-  --text-primary: #3D3D3D;
-  --text-secondary: #8C8279;
-  --text-muted: #B5ABA2;
-  --text-on-primary: #FFFFFF;
-  --border-light: #E8E4DF;
-  --border-medium: #D5CEC7;
-  --color-success: #9BB8A3;
-  --color-success-light: #D4E8D8;
-  --color-error: #D4A9A9;
-  --color-error-light: #F0D4D4;
-  --color-warning: #D4C5A9;
-  --shadow-sm: 0 1px 3px rgba(61, 61, 61, 0.05), 0 1px 2px rgba(61, 61, 61, 0.03);
-  --shadow-md: 0 4px 6px rgba(61, 61, 61, 0.04), 0 10px 15px rgba(61, 61, 61, 0.05);
-  --shadow-lg: 0 10px 25px rgba(61, 61, 61, 0.04), 0 20px 40px rgba(61, 61, 61, 0.06);
-  --shadow-xl: 0 20px 50px rgba(61, 61, 61, 0.06), 0 30px 60px rgba(61, 61, 61, 0.08);
-  --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
-  --font-body: 'DM Sans', 'Noto Sans SC', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
-  --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ===================== 基础样式 ===================== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ===================== 背景装饰 ===================== */
-.bg-decor {
-  position: fixed;
-  pointer-events: none;
-  z-index: 0;
-}
-.bg-decor-1 {
-  width: 700px; height: 700px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(143, 163, 184, 0.10) 0%, transparent 70%);
-  top: -250px; right: -200px;
-  animation: float-slow 20s ease-in-out infinite;
-}
-.bg-decor-2 {
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 70% 70%, rgba(212, 169, 169, 0.08) 0%, transparent 70%);
-  bottom: -150px; left: -150px;
-  animation: float-slow 25s ease-in-out infinite reverse;
-}
-.bg-decor-3 {
-  width: 300px; height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(201, 168, 154, 0.06) 0%, transparent 70%);
-  top: 40%; left: -100px;
-  animation: float-slow 18s ease-in-out infinite 5s;
-}
-@keyframes float-slow {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -30px) scale(1.05); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
-}
-
-/* 噪点纹理（极淡） */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ===================== 卡片组件 ===================== */
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: var(--shadow-lg);
-  transition: all var(--transition-normal);
-}
-.glass-card:hover {
-  background: var(--bg-card-hover);
-  box-shadow: var(--shadow-xl);
-}
-
-.card-compact {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--shadow-md);
-}
-
-/* ===================== 按钮 ===================== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 0.938rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-}
-.btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
-  color: var(--text-on-primary);
-  box-shadow: 0 4px 15px rgba(143, 163, 184, 0.3);
-}
-.btn-primary:hover:not(:disabled) {
-  box-shadow: 0 6px 25px rgba(143, 163, 184, 0.4);
-  transform: translateY(-1px);
-}
-.btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.97); }
-
-.btn-secondary {
-  background: rgba(143, 163, 184, 0.12);
-  color: var(--brand-primary-dark);
-  border: 1px solid rgba(143, 163, 184, 0.2);
-}
-.btn-secondary:hover:not(:disabled) {
-  background: rgba(143, 163, 184, 0.2);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, var(--color-success) 0%, #8DAD95 100%);
-  color: var(--text-on-primary);
-  box-shadow: 0 4px 15px rgba(155, 184, 163, 0.3);
-}
-.btn-success:hover:not(:disabled) {
-  box-shadow: 0 6px 25px rgba(155, 184, 163, 0.4);
-  transform: translateY(-1px);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-secondary);
-  padding: 8px 16px;
-}
-.btn-ghost:hover { color: var(--text-primary); background: rgba(61, 61, 61, 0.05); }
-
-/* ===================== 输入框 ===================== */
-.input-group { margin-bottom: 20px; }
-.input-label {
-  display: block;
-  font-size: 0.813rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  letter-spacing: 0.01em;
-}
-.input-field {
-  width: 100%;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1.5px solid var(--border-light);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 0.938rem;
-  color: var(--text-primary);
-  transition: all var(--transition-fast);
-  outline: none;
-}
-.input-field::placeholder { color: var(--text-muted); }
-.input-field:focus {
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 3px rgba(143, 163, 184, 0.12);
-  background: rgba(255, 255, 255, 0.9);
-}
-.input-field.error { border-color: var(--color-error); }
-
-/* ===================== 动画 ===================== */
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes pulse-soft {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(400%); }
-}
-@keyframes slide-down {
-  from { opacity: 0; transform: translateY(-12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes breathe {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(143, 163, 184, 0.1); }
-  50% { box-shadow: 0 0 0 8px rgba(143, 163, 184, 0); }
-}
-
-.anim-fade-up { animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.anim-fade-in { animation: fade-in 0.5s ease both; }
-.anim-scale-in { animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.anim-slide-down { animation: slide-down 0.3s ease both; }
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
-
-/* ===================== 自定义滚动条 ===================== */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-/* ===================== 上传拖拽区 ===================== */
-.drop-zone {
-  border: 2px dashed var(--border-medium);
-  border-radius: var(--radius-xl);
-  padding: 48px 24px;
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  position: relative;
-}
-.drop-zone:hover {
-  border-color: var(--brand-primary);
-  background: rgba(143, 163, 184, 0.04);
-}
-.drop-zone.dragover {
-  border-color: var(--brand-primary);
-  background: rgba(143, 163, 184, 0.08);
-  border-style: solid;
-  transform: scale(1.01);
-}
-.drop-zone-icon {
-  width: 56px; height: 56px;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  background: rgba(143, 163, 184, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-normal);
-}
-.drop-zone:hover .drop-zone-icon {
-  background: rgba(143, 163, 184, 0.15);
-  transform: scale(1.05);
-}
-
-/* ===================== 进度条 ===================== */
-.progress-bar {
-  height: 4px;
-  background: var(--border-light);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-}
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
-  transition: width 0.5s ease;
-  position: relative;
-}
-.progress-bar-fill.active::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: shimmer 1.8s infinite;
-}
-
-/* ===================== 状态指示器 ===================== */
-.status-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-}
-.status-dot.active { background: var(--brand-primary); animation: pulse-soft 1.5s ease-in-out infinite; }
-.status-dot.success { background: var(--color-success); }
-.status-dot.error { background: var(--color-error); }
-
-/* ===================== SRT 预览 ===================== */
-.srt-preview {
-  font-family: var(--font-mono);
-  font-size: 0.813rem;
-  line-height: 1.7;
-  background: rgba(61, 61, 61, 0.02);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  max-height: 160px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-all;
-  color: var(--text-secondary);
-}
-
-/* ===================== 历史任务时间线 ===================== */
-.timeline-item {
-  position: relative;
-  padding-left: 28px;
-  padding-bottom: 16px;
-}
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: 8px; top: 8px;
-  width: 2px; height: calc(100% - 8px);
-  background: var(--border-light);
-}
-.timeline-item:last-child::before { display: none; }
-.timeline-dot {
-  position: absolute;
-  left: 2px; top: 8px;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  border: 2.5px solid var(--brand-primary-light);
-  background: var(--bg-card);
-  z-index: 1;
-}
-.timeline-dot.done { border-color: var(--color-success); background: var(--color-success-light); }
-.timeline-dot.failed { border-color: var(--color-error); background: var(--color-error-light); }
-
-/* ===================== Toast 通知 ===================== */
-.toast-container {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.toast {
-  background: var(--bg-card);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: var(--radius-md);
-  padding: 14px 20px;
-  box-shadow: var(--shadow-lg);
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  animation: slide-down 0.3s ease, fade-in-up 0.3s ease;
-  max-width: 360px;
-}
-.toast.success { border-left: 3px solid var(--color-success); }
-.toast.error { border-left: 3px solid var(--color-error); }
-.toast.info { border-left: 3px solid var(--brand-primary); }
-
-/* ===================== 响应式 ===================== */
-@media (max-width: 640px) {
-  .glass-card { border-radius: var(--radius-lg); }
-  .drop-zone { padding: 32px 16px; }
-  .btn { padding: 10px 20px; font-size: 0.875rem; }
-}
-
-/* ===================== 加载骨架 ===================== */
-.skeleton {
-  background: linear-gradient(90deg, var(--border-light) 25%, rgba(255,255,255,0.5) 50%, var(--border-light) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: var(--radius-sm);
-}
-</style>
+<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<!-- ==================== 背景装饰 ==================== -->
 <div class="bg-decor bg-decor-1" aria-hidden="true"></div>
 <div class="bg-decor bg-decor-2" aria-hidden="true"></div>
 <div class="bg-decor bg-decor-3" aria-hidden="true"></div>
 
-<!-- ==================== Toast 容器 ==================== -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ==================== 应用容器 ==================== -->
+<div id="modalOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(61,61,61,0.3);backdrop-filter:blur(4px)">
+  <div id="modalContent" class="glass-card rounded-2xl p-8 w-full max-w-sm anim-scale-in" style="border-radius:24px;max-height:90vh;overflow-y:auto"></div>
+</div>
+
 <div id="app" class="min-h-[100dvh] flex items-center justify-center p-4 relative z-10">
 
-  <!-- ======================== 登录页 ======================== -->
-  <div id="loginView" class="glass-card rounded-2xl p-10 w-full max-w-sm anim-fade-up" style="border-radius: 28px;">
-    <!-- 品牌 Logo -->
+  <!-- ====== 登录页 ====== -->
+  <div id="loginView" class="glass-card rounded-2xl p-10 w-full max-w-sm anim-fade-up" style="border-radius:28px">
     <div class="text-center mb-9">
-      <div class="w-16 h-16 mx-auto mb-5 rounded-2xl relative overflow-hidden" style="border-radius: 18px;">
-        <div class="absolute inset-0" style="background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));"></div>
+      <div class="w-16 h-16 mx-auto mb-5 rounded-2xl relative overflow-hidden" style="border-radius:18px">
+        <div class="absolute inset-0" style="background:linear-gradient(135deg,var(--brand-primary),var(--brand-secondary))"></div>
         <div class="absolute inset-0 flex items-center justify-center">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
           </svg>
         </div>
       </div>
-      <h1 class="text-3xl font-semibold tracking-tight" style="font-family: var(--font-display); color: var(--text-primary);">智影字幕</h1>
-      <p class="text-sm mt-2" style="color: var(--text-secondary);">AI 智能语音转字幕工具</p>
+      <h1 class="text-3xl font-semibold tracking-tight" style="font-family:var(--font-display);color:var(--text-primary)">智影字幕</h1>
+      <p class="text-sm mt-2" style="color:var(--text-secondary)">AI 智能语音转字幕工具</p>
     </div>
-
-    <!-- 登录表单 -->
     <div class="space-y-1">
       <div class="input-group">
         <label class="input-label" for="phoneInput">手机号</label>
@@ -455,13 +44,11 @@ body::before {
       <div class="input-group">
         <label class="input-label" for="codeInput">验证码</label>
         <div class="flex gap-3">
-          <input id="codeInput" type="text" placeholder="123456" maxlength="6" class="input-field" autocomplete="one-time-code" style="flex:1;">
-          <button id="sendCodeBtn" onclick="sendCode()" class="btn btn-secondary whitespace-nowrap" style="padding-left: 16px; padding-right: 16px;">
-            获取验证码
-          </button>
+          <input id="codeInput" type="text" placeholder="123456" maxlength="6" class="input-field" autocomplete="one-time-code" style="flex:1">
+          <button id="sendCodeBtn" onclick="sendCode()" class="btn btn-secondary whitespace-nowrap" style="padding-left:16px;padding-right:16px">获取验证码</button>
         </div>
       </div>
-      <div style="padding-top: 12px;">
+      <div style="padding-top:12px">
         <button onclick="login()" class="btn btn-primary w-full text-base py-3.5">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
           登录 / 注册
@@ -470,103 +57,143 @@ body::before {
     </div>
   </div>
 
-  <!-- ======================== 主页面 ======================== -->
-  <div id="mainView" class="hidden w-full max-w-[520px]">
+  <!-- ====== 主页面 ====== -->
+  <div id="mainView" class="hidden w-full max-w-[560px]">
 
     <!-- 顶部栏 -->
-    <header class="glass-card rounded-2xl px-6 py-4 flex items-center justify-between anim-fade-up" style="border-radius: 20px;">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+    <header class="glass-card rounded-2xl px-5 py-3.5 flex items-center justify-between anim-fade-up" style="border-radius:20px">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,var(--brand-primary),var(--brand-secondary))">
+          <svg class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="width:18px;height:18px">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
           </svg>
         </div>
-        <div>
-          <h2 class="font-semibold text-base" style="font-family: var(--font-display); font-weight: 600;">智影字幕</h2>
-          <p class="text-xs" id="userInfo" style="color: var(--text-muted);">已登录</p>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-sm truncate" style="font-family:var(--font-display)">智影字幕</span>
+            <span id="memberBadge" class="badge-free text-xs px-2 py-0.5 rounded-full font-medium shrink-0">Free</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs" style="color:var(--text-muted)">
+            <span id="userInfo" class="truncate">已登录</span>
+            <span id="quotaDisplay" class="hidden shrink-0">剩余 <strong id="quotaNum" style="color:var(--brand-primary-dark)">300</strong>s</span>
+          </div>
         </div>
       </div>
-      <button onclick="logout()" class="btn-ghost rounded-lg text-sm">退出</button>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button onclick="switchTab('shop')" class="btn-ghost rounded-lg text-xs px-2.5 py-1.5" title="商店">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+        </button>
+        <button onclick="logout()" class="btn-ghost rounded-lg text-xs px-2 py-1.5">退出</button>
+      </div>
     </header>
 
-    <!-- 上传区域 -->
-    <section id="uploadSection" class="glass-card rounded-2xl p-8 mt-5 anim-fade-up delay-1 anim-scale-in" style="border-radius: 20px;">
-      <div
-        id="dropZone"
-        class="drop-zone"
-        onclick="document.getElementById('fileInput').click()"
-        ondragover="event.preventDefault(); this.classList.add('dragover')"
-        ondragleave="this.classList.remove('dragover')"
-        ondrop="handleDrop(event)"
-      >
-        <input id="fileInput" type="file" accept="video/*" class="hidden" onchange="handleFile(this.files[0])">
-        <!-- 空状态 -->
-        <div id="uploadPlaceholder">
-          <div class="drop-zone-icon">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color: var(--brand-primary);">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-            </svg>
+    <!-- Tab 导航 -->
+    <div class="tab-nav mt-4 anim-fade-up delay-1">
+      <button class="tab-btn active" onclick="switchTab('home')" data-tab="home">字幕生成</button>
+      <button class="tab-btn" onclick="switchTab('history')" data-tab="history">我的历史</button>
+      <button class="tab-btn" onclick="switchTab('shop')" data-tab="shop">会员中心</button>
+    </div>
+
+    <!-- ====== Tab: 首页 ====== -->
+    <div id="tab-home" class="tab-content active mt-4 space-y-4">
+
+      <div id="quotaBar" class="card-compact rounded-xl px-5 py-3 anim-scale-in delay-2 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(143,163,184,0.1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--brand-primary)"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
-          <p class="text-base font-medium" style="color: var(--text-primary);">拖拽视频到此处</p>
-          <p class="text-sm mt-1.5" style="color: var(--text-muted);">或点击选择文件 · 支持 MP4、MOV、AVI</p>
+          <div>
+            <div class="text-xs" style="color:var(--text-secondary)">剩余配额</div>
+            <div class="text-sm font-semibold" id="quotaDetail" style="color:var(--text-primary)">300 秒</div>
+          </div>
         </div>
-        <!-- 已选文件 -->
-        <div id="uploadFileInfo" class="hidden">
-          <div class="flex items-center gap-4 justify-center">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style="background: rgba(143, 163, 184, 0.1);">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color: var(--brand-primary);">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <button onclick="switchTab('shop')" class="btn btn-sm btn-secondary">购买</button>
+      </div>
+
+      <!-- 上传区 -->
+      <section id="uploadArea" class="glass-card rounded-2xl p-6 anim-scale-in delay-2" style="border-radius:20px">
+        <div id="dropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()"
+          ondragover="event.preventDefault();this.classList.add('dragover')"
+          ondragleave="this.classList.remove('dragover')"
+          ondrop="handleDrop(event)">
+          <input id="fileInput" type="file" accept="video/*" class="hidden" onchange="handleFile(this.files[0])">
+          <div id="uploadPlaceholder">
+            <div class="drop-zone-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--brand-primary)">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
               </svg>
             </div>
-            <div class="text-left">
-              <p id="fileName" class="font-medium text-sm" style="color: var(--text-primary);"></p>
-              <p id="fileSize" class="text-xs mt-0.5" style="color: var(--text-muted);"></p>
-            </div>
+            <p class="text-base font-medium" style="color:var(--text-primary)">拖拽视频到此处</p>
+            <p class="text-sm mt-1.5" style="color:var(--text-muted)">或点击选择文件 · 支持 MP4、MOV、AVI</p>
           </div>
-          <button onclick="event.stopPropagation(); resetUpload()" class="text-sm mt-4 transition" style="color: var(--brand-secondary);">
-            <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            重新选择
-          </button>
+          <div id="uploadFileInfo" class="hidden">
+            <div class="flex items-center gap-4 justify-center">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(143,163,184,0.1)">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--brand-primary)">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div class="text-left">
+                <p id="fileName" class="font-medium text-sm" style="color:var(--text-primary)"></p>
+                <p id="fileSize" class="text-xs mt-0.5" style="color:var(--text-muted)"></p>
+              </div>
+            </div>
+            <button onclick="event.stopPropagation();resetUpload()" class="text-sm mt-4 transition" style="color:var(--brand-secondary)">
+              <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> 重新选择
+            </button>
+          </div>
         </div>
-      </div>
-      <button id="uploadBtn" onclick="uploadVideo()" disabled
-        class="btn btn-primary w-full mt-6 text-base py-3.5">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-        开始上传
-      </button>
-    </section>
+        <button id="uploadBtn" onclick="uploadVideo()" disabled
+          class="btn btn-primary w-full mt-5 text-base py-3.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          开始上传
+        </button>
+      </section>
 
-    <!-- 任务进度 -->
-    <section id="taskSection" class="hidden glass-card rounded-2xl p-8 mt-5 anim-fade-up" style="border-radius: 20px;">
-      <div class="flex items-center gap-3 mb-5">
-        <span class="status-dot active" id="statusDot"></span>
-        <span class="font-medium text-sm" id="taskStatusText" style="color: var(--text-primary);">任务处理中</span>
-        <span class="ml-auto text-xs" id="taskElapsed" style="color: var(--text-muted);"></span>
-      </div>
+      <!-- 任务进度 -->
+      <section id="taskSection" class="hidden glass-card rounded-2xl p-6 anim-fade-up" style="border-radius:20px">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="status-dot active" id="statusDot"></span>
+          <span class="font-medium text-sm" id="taskStatusText" style="color:var(--text-primary)">任务处理中</span>
+          <span class="ml-auto text-xs" id="taskElapsed" style="color:var(--text-muted)"></span>
+        </div>
+        <div class="progress-bar mb-4">
+          <div id="progressBar" class="progress-bar-fill active" style="width:30%"></div>
+        </div>
+        <p class="text-xs text-center leading-relaxed" style="color:var(--text-muted)">
+          <svg class="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+          该过程耗时较长，您可以喝杯茶，眺望远处休息一下~
+        </p>
+      </section>
 
-      <!-- 进度条 -->
-      <div class="progress-bar mb-5">
-        <div id="progressBar" class="progress-bar-fill active" style="width: 30%;"></div>
-      </div>
-
-      <p class="text-xs text-center leading-relaxed" style="color: var(--text-muted);">
-        <svg class="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-        该过程耗时较长，您可以喝杯茶，眺望远处休息一下~
-      </p>
-
-      <!-- 结果 -->
-      <div id="taskResult" class="hidden mt-6 pt-6" style="border-top: 1px solid var(--border-light);">
-
-        <!-- 成功 -->
-        <div id="successResult" class="hidden">
+      <!-- 任务结果区（完成后显示） -->
+      <section id="resultSection" class="hidden glass-card rounded-2xl p-6 anim-fade-up" style="border-radius:20px">
+        <div id="resultSuccess" class="hidden">
           <div class="flex items-center gap-2 mb-4">
             <span class="status-dot success"></span>
-            <span class="font-medium text-sm" style="color: var(--color-success);">转写完成</span>
+            <span class="font-medium text-sm" style="color:var(--color-success)">转写完成</span>
           </div>
-          <!-- SRT 预览 -->
-          <div class="srt-preview mb-4" id="srtPreview"></div>
-          <!-- 操作区 -->
+
+          <label class="input-label mb-2">字幕内容</label>
+          <div class="srt-preview mb-3" id="srtPreviewDisplay"></div>
+          <textarea class="srt-editor hidden mb-3" id="srtEditor" rows="6"></textarea>
+
+          <div class="flex gap-2 mb-4" id="srtActions">
+            <button onclick="toggleSrtEdit()" id="editSrtBtn" class="btn btn-sm btn-secondary">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+              编辑字幕
+            </button>
+            <button onclick="saveSrtEdit()" id="saveSrtBtn" class="hidden btn btn-sm btn-success">保存修改</button>
+            <button onclick="cancelSrtEdit()" id="cancelSrtBtn" class="hidden btn btn-sm btn-ghost">取消</button>
+          </div>
+
+          <div id="styleSelectorArea" class="hidden mb-4">
+            <label class="input-label mb-2">字幕样式</label>
+            <div id="styleChips" class="flex flex-wrap gap-2"></div>
+            <p class="text-xs mt-2" id="stylePreviewText" style="color:var(--text-muted)">选择一种字幕样式应用到烧录的视频中</p>
+          </div>
+
           <div class="flex flex-col gap-3">
             <button onclick="burnSubtitles()" id="burnBtn" class="btn btn-success w-full">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
@@ -580,413 +207,139 @@ body::before {
             </div>
           </div>
         </div>
-
-        <!-- 失败 -->
-        <div id="failResult" class="hidden">
+        <div id="resultFail" class="hidden">
           <div class="flex items-center gap-2 mb-3">
             <span class="status-dot error"></span>
-            <span class="font-medium text-sm" style="color: var(--color-error);">处理失败</span>
+            <span class="font-medium text-sm" style="color:var(--color-error)">处理失败</span>
           </div>
-          <p class="text-sm" id="errorMessage" style="color: var(--text-secondary);"></p>
+          <p class="text-sm" id="errorMessage" style="color:var(--text-secondary)"></p>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 任务历史 -->
-    <section id="historySection" class="hidden glass-card rounded-2xl p-8 mt-5 anim-fade-up delay-3" style="border-radius: 20px;">
-      <h3 class="font-semibold text-base mb-5 flex items-center gap-2" style="font-family: var(--font-display); color: var(--text-primary);">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color: var(--brand-primary);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        历史任务
-      </h3>
-      <div id="historyList" class="space-y-1"></div>
-      <div id="historyEmpty" class="text-center py-8">
-        <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-        <p class="text-sm" style="color: var(--text-muted);">暂无历史任务</p>
+      <!-- 烧录区（始终展示） -->
+      <section id="burnFeatureArea" class="glass-card rounded-2xl p-6 anim-scale-in delay-3" style="border-radius:20px">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(155,184,163,0.1)">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--color-success)">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold text-sm">字幕烧录</div>
+            <div class="text-xs" id="burnFeatureDesc" style="color:var(--text-muted)">将字幕嵌入视频文件</div>
+          </div>
+        </div>
+        <div id="burnFeatureLock" class="text-center py-3">
+          <p class="text-sm" style="color:var(--text-secondary)">🔒 升级专业会员（¥19/月）以解锁字幕烧录功能</p>
+          <button onclick="switchTab('shop')" class="btn btn-sm btn-primary mt-3">查看会员方案</button>
+        </div>
+        <div id="burnFeatureUnlock" class="hidden text-center py-3">
+          <p class="text-sm" style="color:var(--color-success)">✅ 字幕烧录功能已解锁</p>
+          <p class="text-xs mt-1" style="color:var(--text-muted)">完成字幕转写后，在结果区域使用烧录功能</p>
+        </div>
+      </section>
+
+      <!-- 字幕样式展示区（始终展示20种样式） -->
+      <section id="styleShowcaseArea" class="glass-card rounded-2xl p-6 anim-scale-in delay-3" style="border-radius:20px">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(201,168,124,0.1)">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--color-gold)">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold text-sm">字幕样式（20种）</div>
+            <div class="text-xs" id="styleShowcaseDesc" style="color:var(--text-muted)">采用 ASS 高级字幕格式，支持丰富样式定义</div>
+          </div>
+        </div>
+        <div id="homeStyleChips" class="flex flex-wrap gap-2 mb-3"></div>
+        <div id="styleShowcaseLock" class="text-center pt-2" style="border-top:1px solid var(--border-light)">
+          <p class="text-xs" style="color:var(--text-muted)">🔒 升级高级会员（¥29/月）以使用自定义字幕样式</p>
+          <button onclick="switchTab('shop')" class="btn btn-xs btn-ghost mt-1">查看详情</button>
+        </div>
+        <div id="styleShowcaseUnlock" class="hidden text-center pt-2" style="border-top:1px solid var(--border-light)">
+          <p class="text-xs" style="color:var(--color-gold)">✅ 高级会员 · 点击上方样式即可选择</p>
+        </div>
+      </section>
+
+      <!-- 底栏操作 -->
+      <div id="bottomActions" class="hidden flex gap-3 anim-fade-up">
+        <button onclick="resetAll()" class="btn btn-ghost flex-1 text-sm">新建任务</button>
       </div>
-    </section>
+
+    </div>
+
+    <!-- ====== Tab: 历史 ====== -->
+    <div id="tab-history" class="tab-content mt-4">
+      <section class="glass-card rounded-2xl p-6 anim-scale-in" style="border-radius:20px">
+        <h3 class="font-semibold text-base mb-5 flex items-center gap-2" style="font-family:var(--font-display);color:var(--text-primary)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--brand-primary)"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          历史记录
+          <span class="text-xs font-normal ml-auto" id="historyNote" style="color:var(--text-muted)"></span>
+        </h3>
+        <div id="historyListContainer">
+          <div id="historyLoading" class="text-center py-8">
+            <svg class="w-6 h-6 mx-auto animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+            <p class="text-sm mt-3" style="color:var(--text-muted)">加载中...</p>
+          </div>
+          <div id="historyList" class="hidden space-y-2"></div>
+          <div id="historyEmpty" class="hidden text-center py-12">
+            <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1" style="color:var(--text-muted)"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            <p class="text-sm" style="color:var(--text-muted)">暂无历史任务</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====== Tab: 会员中心 ====== -->
+    <div id="tab-shop" class="tab-content mt-4 space-y-4">
+
+      <section class="glass-card rounded-2xl p-6 anim-scale-in" style="border-radius:20px">
+        <h3 class="font-semibold text-base mb-4 flex items-center gap-2" style="font-family:var(--font-display);color:var(--text-primary)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--color-gold)"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+          当前权益
+        </h3>
+        <div id="memberStatusDisplay" class="grid grid-cols-2 gap-3 text-sm">
+          <div class="card-compact rounded-xl p-3.5 text-center">
+            <div class="text-xs mb-1" style="color:var(--text-muted)">当前套餐</div>
+            <div id="currentTierDisplay" class="font-semibold">Free</div>
+          </div>
+          <div class="card-compact rounded-xl p-3.5 text-center">
+            <div class="text-xs mb-1" style="color:var(--text-muted)">剩余配额</div>
+            <div id="currentQuotaDisplay" class="font-semibold">300s</div>
+          </div>
+          <div class="card-compact rounded-xl p-3.5 text-center">
+            <div class="text-xs mb-1" style="color:var(--text-muted)">已使用</div>
+            <div id="currentUsedDisplay" class="font-semibold">0s</div>
+          </div>
+          <div class="card-compact rounded-xl p-3.5 text-center">
+            <div class="text-xs mb-1" style="color:var(--text-muted)">文件保留</div>
+            <div id="currentRetentionDisplay" class="font-semibold">3天</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-2xl p-6 anim-scale-in delay-1" style="border-radius:20px">
+        <h3 class="font-semibold text-base mb-1 flex items-center gap-2" style="font-family:var(--font-display);color:var(--text-primary)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--color-gold)"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg>
+          会员套餐
+        </h3>
+        <p class="text-xs mb-5" style="color:var(--text-muted)">选择适合你的套餐</p>
+        <div class="grid gap-3" id="membershipPlanList"></div>
+      </section>
+
+      <section class="glass-card rounded-2xl p-6 anim-scale-in delay-2" style="border-radius:20px">
+        <h3 class="font-semibold text-base mb-1 flex items-center gap-2" style="font-family:var(--font-display);color:var(--text-primary)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" style="color:var(--brand-primary)"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          增量包
+        </h3>
+        <p class="text-xs mb-5" style="color:var(--text-muted)">配额用完了？购买增量包补充</p>
+        <div class="grid gap-3" id="topupPackageList"></div>
+      </section>
+
+    </div>
 
   </div>
 </div>
 
-<script>
-/* ======================== 常量 & 状态 ======================== */
-const API_BASE = '';
-const POLL_INTERVAL = 2000;
-const MAX_POLL_COUNT = 300;
-
-const state = {
-  userId: null,
-  phone: null,
-  taskId: null,
-  selectedFile: null,
-  srtContent: null,
-  outputUrl: null,
-  pollingTimer: null,
-  pollCount: 0,
-  startTime: null,
-  elapsedTimer: null,
-  history: [],
-};
-
-/* ======================== Toast 通知 ======================== */
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-
-  const icons = {
-    success: '<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="color: var(--color-success);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-    error: '<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="color: var(--color-error);"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-    info: '<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="color: var(--brand-primary);"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>',
-  };
-  toast.innerHTML = (icons[type] || icons.info) + '<span>' + message + '</span>';
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(20px)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-/* ======================== 成功提示音 ======================== */
-function playSuccessSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [523.25, 659.25, 783.99];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0, i * 0.15);
-      gain.gain.linearRampToValueAtTime(0.25, i * 0.15 + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, i * 0.15 + 0.4);
-      osc.start(i * 0.15);
-      osc.stop(i * 0.15 + 0.4);
-    });
-  } catch(e) { /* 忽略音频错误 */ }
-}
-
-function showNotification(title, body) {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted') {
-    new Notification(title, { body, icon: '/favicon.ico' });
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission();
-  }
-}
-
-/* ======================== 登录 ======================== */
-function sendCode() {
-  const phone = document.getElementById('phoneInput').value.trim();
-  if (!phone) { showToast('请输入手机号', 'error'); return; }
-  const btn = document.getElementById('sendCodeBtn');
-  btn.disabled = true;
-  fetch(API_BASE + '/send-code', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone })
-  }).then(r => r.json()).then(d => {
-    showToast('Mock 验证码：123456', 'info');
-    let remain = 30;
-    btn.textContent = remain + 's';
-    const iv = setInterval(() => {
-      if (--remain <= 0) { clearInterval(iv); btn.textContent = '重新获取'; btn.disabled = false; }
-      else btn.textContent = remain + 's';
-    }, 1000);
-  }).catch(() => {
-    btn.disabled = false;
-    btn.textContent = '获取验证码';
-    showToast('发送失败，请重试', 'error');
-  });
-}
-
-function login() {
-  const phone = document.getElementById('phoneInput').value.trim();
-  const code = document.getElementById('codeInput').value.trim();
-  if (!phone || !code) { showToast('请填写手机号和验证码', 'error'); return; }
-  fetch(API_BASE + '/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone, code })
-  }).then(r => r.json()).then(d => {
-    if (d.user_id) {
-      state.userId = d.user_id;
-      state.phone = phone;
-      showMain();
-      showToast('登录成功', 'success');
-    } else {
-      showToast(d.detail || '登录失败', 'error');
-    }
-  }).catch(e => showToast('登录失败: ' + e.message, 'error'));
-}
-
-function logout() {
-  clearInterval(state.pollingTimer);
-  clearInterval(state.elapsedTimer);
-  state.userId = null;
-  state.phone = null;
-  state.taskId = null;
-  state.selectedFile = null;
-  document.getElementById('mainView').classList.add('hidden');
-  document.getElementById('loginView').classList.remove('hidden');
-  showToast('已退出登录', 'info');
-}
-
-function showMain() {
-  document.getElementById('loginView').classList.add('hidden');
-  document.getElementById('mainView').classList.remove('hidden');
-  document.getElementById('userInfo').textContent = state.phone;
-  loadHistory();
-}
-
-/* ======================== 上传 ======================== */
-function handleFile(file) {
-  if (!file) return;
-  document.getElementById('uploadPlaceholder').classList.add('hidden');
-  document.getElementById('uploadFileInfo').classList.remove('hidden');
-  document.getElementById('fileName').textContent = file.name;
-  document.getElementById('fileSize').textContent = formatSize(file.size);
-  state.selectedFile = file;
-  document.getElementById('uploadBtn').disabled = false;
-}
-
-function resetUpload() {
-  state.selectedFile = null;
-  document.getElementById('fileInput').value = '';
-  document.getElementById('uploadPlaceholder').classList.remove('hidden');
-  document.getElementById('uploadFileInfo').classList.add('hidden');
-  document.getElementById('uploadBtn').disabled = true;
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('dropZone').classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('video/')) {
-    handleFile(file);
-  } else {
-    showToast('请拖入视频文件', 'error');
-  }
-}
-
-function formatSize(bytes) {
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-}
-
-function uploadVideo() {
-  if (!state.selectedFile) return;
-  const btn = document.getElementById('uploadBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg> 上传中...';
-
-  const fd = new FormData();
-  fd.append('video', state.selectedFile);
-  fd.append('user_id', state.userId);
-
-  fetch(API_BASE + '/upload', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(d => {
-      if (d.task_id) {
-        state.taskId = d.task_id;
-        state.pollCount = 0;
-        state.startTime = Date.now();
-        document.getElementById('uploadSection').classList.add('hidden');
-        document.getElementById('taskSection').classList.remove('hidden');
-        document.getElementById('taskResult').classList.add('hidden');
-        document.getElementById('progressBar').style.width = '10%';
-        document.getElementById('progressBar').classList.add('active');
-        document.getElementById('statusDot').className = 'status-dot active';
-        updateTaskStatus('任务已提交');
-        startPolling();
-        startElapsedTimer();
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> 开始上传';
-        showToast(d.detail || '上传失败', 'error');
-      }
-    })
-    .catch(e => {
-      btn.disabled = false;
-      btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> 开始上传';
-      showToast('上传失败: ' + e.message, 'error');
-    });
-}
-
-/* ======================== 轮询 ======================== */
-function startPolling() {
-  if (state.pollingTimer) clearInterval(state.pollingTimer);
-  state.pollingTimer = setInterval(pollTask, POLL_INTERVAL);
-}
-
-function updateTaskStatus(text) {
-  document.getElementById('taskStatusText').textContent = text;
-}
-
-function updateProgress(widthPercent) {
-  document.getElementById('progressBar').style.width = widthPercent + '%';
-}
-
-function pollTask() {
-  state.pollCount++;
-  if (state.pollCount > MAX_POLL_COUNT) {
-    clearInterval(state.pollingTimer);
-    clearInterval(state.elapsedTimer);
-    updateTaskStatus('任务超时');
-    document.getElementById('progressBar').classList.remove('active');
-    document.getElementById('statusDot').className = 'status-dot error';
-    showTaskResult('fail', '任务可能失败，请联系支持');
-    return;
-  }
-
-  fetch(API_BASE + '/task/' + state.taskId)
-    .then(r => r.json())
-    .then(d => {
-      const pct = Math.min(15 + (state.pollCount / MAX_POLL_COUNT) * 70, 85);
-      switch (d.status) {
-        case 'pending':
-          updateTaskStatus('排队等待中');
-          updateProgress(pct);
-          break;
-        case 'processing':
-          updateTaskStatus('AI 语音识别中');
-          updateProgress(pct + 5);
-          break;
-        case 'done':
-          clearInterval(state.pollingTimer);
-          clearInterval(state.elapsedTimer);
-          updateTaskStatus('转写完成');
-          updateProgress(100);
-          document.getElementById('progressBar').classList.remove('active');
-          document.getElementById('statusDot').className = 'status-dot success';
-          showTaskResult('success', d.srt_content || '(空字幕)');
-          state.srtContent = d.srt_content;
-          state.outputUrl = d.output_video_url;
-          playSuccessSound();
-          showNotification('智影字幕', '视频转写已完成！');
-          showToast('转写完成！', 'success');
-          loadHistory();
-          break;
-        case 'failed':
-          clearInterval(state.pollingTimer);
-          clearInterval(state.elapsedTimer);
-          updateTaskStatus('处理失败');
-          document.getElementById('progressBar').classList.remove('active');
-          document.getElementById('progressBar').style.background = '#D4A9A9';
-          document.getElementById('statusDot').className = 'status-dot error';
-          updateProgress(100);
-          showTaskResult('fail', d.error_message || '未知错误');
-          loadHistory();
-          break;
-      }
-    });
-}
-
-function showTaskResult(type, content) {
-  document.getElementById('taskResult').classList.remove('hidden');
-  document.getElementById('successResult').classList.add('hidden');
-  document.getElementById('failResult').classList.add('hidden');
-  document.getElementById('downloadSection').classList.add('hidden');
-  document.getElementById('burnBtn').disabled = false;
-  document.getElementById('burnBtn').innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg> 生成带字幕视频';
-
-  if (type === 'success') {
-    document.getElementById('successResult').classList.remove('hidden');
-    document.getElementById('srtPreview').textContent = content;
-  } else {
-    document.getElementById('failResult').classList.remove('hidden');
-    document.getElementById('errorMessage').textContent = content;
-  }
-}
-
-function startElapsedTimer() {
-  if (state.elapsedTimer) clearInterval(state.elapsedTimer);
-  state.elapsedTimer = setInterval(() => {
-    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
-    const m = Math.floor(elapsed / 60);
-    const s = elapsed % 60;
-    document.getElementById('taskElapsed').textContent = m + '分' + s + '秒';
-  }, 1000);
-}
-
-/* ======================== 烧录 ======================== */
-function burnSubtitles() {
-  const btn = document.getElementById('burnBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg> 生成中...';
-
-  fetch(API_BASE + '/burn', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ task_id: state.taskId, style: {} })
-  }).then(r => r.json()).then(d => {
-    if (d.output_video_url) {
-      document.getElementById('downloadSection').classList.remove('hidden');
-      document.getElementById('downloadLink').href = d.output_video_url;
-      btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg> 生成带字幕视频';
-      btn.disabled = false;
-      showToast('字幕烧录完成！', 'success');
-    } else {
-      btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg> 生成带字幕视频';
-      btn.disabled = false;
-      showToast(d.detail || '烧录失败', 'error');
-    }
-  }).catch(e => {
-    btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg> 生成带字幕视频';
-    btn.disabled = false;
-    showToast('烧录失败: ' + e.message, 'error');
-  });
-}
-
-/* ======================== 历史任务 ======================== */
-function loadHistory() {
-  const section = document.getElementById('historySection');
-  if (section.classList.contains('hidden')) {
-    section.classList.remove('hidden');
-    section.style.animation = 'none';
-    section.offsetHeight;
-    section.style.animation = '';
-  }
-
-  // 从后端加载当前用户的历史任务
-  // 由于后端没有专门的历史接口，我们使用兜底的本地展示
-  const list = document.getElementById('historyList');
-  const empty = document.getElementById('historyEmpty');
-  const now = new Date();
-
-  // 如果当前有已完成/失败的任务，展示它
-  if (state.taskId) {
-    empty.classList.add('hidden');
-    list.classList.remove('hidden');
-
-    // 检查是否已存在
-    const existing = list.querySelector(`[data-task-id="${state.taskId}"]`);
-    if (existing) return;
-
-    const timeStr = now.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    const item = document.createElement('div');
-    item.className = 'timeline-item';
-    item.setAttribute('data-task-id', state.taskId);
-    item.innerHTML = `
-      <div class="timeline-dot"></div>
-      <div class="flex items-center justify-between" style="padding-top: 2px;">
-        <span class="text-sm" style="color: var(--text-secondary);">${timeStr}</span>
-        <span class="text-xs font-medium" style="color: var(--color-success);">已完成</span>
-      </div>
-    `;
-    list.insertBefore(item, list.firstChild);
-  }
-}
-
-/* ======================== 启动 ======================== */
-if ('Notification' in window && Notification.permission === 'default') {
-  Notification.requestPermission();
-}
-
-</script>
+<script src="/static/app.js"></script>
 </body>
 </html>
